@@ -6,10 +6,10 @@
 
 pkgname=wine-git
 _pkgname=wine
-pkgver=1.7.52
+pkgver=1.7.52.185.g58b1db3
 pkgrel=1
 
-source=("git://github.com/krafczyk/wine.git#branch=master"
+source=("git://github.com/krafczyk/wine.git#branch=winepulse-master-current"
         30-win32-aliases.conf)
 sha1sums=('SKIP'
           '023a5c901c6a091c56e76b6a62d141d87cce9fdb')
@@ -98,6 +98,11 @@ else
   conflicts=('bin32-wine' 'wine-wow64')
   replaces=('bin32-wine')
 fi
+
+pkgver() {
+  cd "$srcdir"/"$_pkgname"
+  git describe --long --tags | sed 's|^wine-||;s|-|.|g'
+}
 
 prepare() {
   cd $_pkgname
