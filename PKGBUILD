@@ -56,7 +56,7 @@ makedepends=(autoconf ncurses bison perl fontforge flex prelink
   alsa-lib        lib32-alsa-lib
   libxcomposite   lib32-libxcomposite
   mesa            lib32-mesa
-  mesa-libgl      lib32-mesa-libgl
+  libgl           lib32-libgl
   libcl           lib32-libcl
   libxslt         lib32-libxslt
   samba
