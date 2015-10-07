@@ -4,16 +4,14 @@
 # Contributor: Eduardo Romero <eduardo@archlinux.org>
 # Contributor: Giovanni Scafora <giovanni@archlinux.org>
 
-pkgname=wine
+pkgname=wine-git
+_pkgname=wine
 pkgver=1.7.52
 pkgrel=1
 
-_pkgbasever=${pkgver/rc/-rc}
-
-source=(http://mirrors.ibiblio.org/wine/source/1.7/$pkgname-$_pkgbasever.tar.bz2{,.sign}
+source=("git://github.com/krafczyk/wine.git#branch=master"
         30-win32-aliases.conf)
-sha1sums=('a323e29090c2f9608d1181e3675948988f6664db'
-          'SKIP'
+sha1sums=('SKIP'
           '023a5c901c6a091c56e76b6a62d141d87cce9fdb')
 validpgpkeys=(5AC1A08B03BD7A313E0A955AF5E6E9EEB9461DD7)
 
@@ -37,6 +35,7 @@ _depends=(
   gcc-libs        lib32-gcc-libs
   libpcap         lib32-libpcap
   desktop-file-utils
+  git
 )
 
 makedepends=(autoconf ncurses bison perl fontforge flex prelink
@@ -101,7 +100,7 @@ else
 fi
 
 prepare() {
-  cd $pkgname-$_pkgbasever
+  cd $_pkgname
 
   sed 's|OpenCL/opencl.h|CL/opencl.h|g' -i configure*
 }
@@ -110,15 +109,15 @@ build() {
   cd "$srcdir"
 
   # remove once https://bugs.winehq.org/show_bug.cgi?id=38653 is resolved
-  export CFLAGS="${CFLAGS/-O2/} -O0"
-  export CXXFLAGS="${CXXFLAGS/-O2/} -O0"
+  #export CFLAGS="${CFLAGS/-O2/} -O0"
+  #export CXXFLAGS="${CXXFLAGS/-O2/} -O0"
 
   # Allow ccache to work
-  mv $pkgname-$_pkgbasever $pkgname
+  #mv $pkgname-$_pkgbasever $pkgname
 
   # Get rid of old build dirs
-  rm -rf $pkgname-{32,64}-build
-  mkdir $pkgname-32-build
+  rm -rf $_pkgname-{32,64}-build
+  mkdir $_pkgname-32-build
 
   # These additional CPPFLAGS solve FS#27662 and FS#34195
   export CPPFLAGS="${CPPFLAGS/-D_FORTIFY_SOURCE=2/} -D_FORTIFY_SOURCE=0"
@@ -126,9 +125,9 @@ build() {
   if [[ $CARCH == x86_64 ]]; then
     msg2 "Building Wine-64..."
 
-    mkdir $pkgname-64-build
-    cd "$srcdir/$pkgname-64-build"
-    ../$pkgname/configure \
+    mkdir $_pkgname-64-build
+    cd "$srcdir/$_pkgname-64-build"
+    ../$_pkgname/configure \
       --prefix=/usr \
       --libdir=/usr/lib \
       --with-x \
@@ -140,15 +139,15 @@ build() {
 
     _wine32opts=(
       --libdir=/usr/lib32
-      --with-wine64="$srcdir/$pkgname-64-build"
+      --with-wine64="$srcdir/$_pkgname-64-build"
     )
 
     export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
   fi
 
   msg2 "Building Wine-32..."
-  cd "$srcdir/$pkgname-32-build"
-  ../$pkgname/configure \
+  cd "$srcdir/$_pkgname-32-build"
+  ../$_pkgname/configure \
     --prefix=/usr \
     --with-x \
     --without-gstreamer \
@@ -162,7 +161,7 @@ package() {
   depends=(${_depends[@]})
 
   msg2 "Packaging Wine-32..."
-  cd "$srcdir/$pkgname-32-build"
+  cd "$srcdir/$_pkgname-32-build"
 
   if [[ $CARCH == i686 ]]; then
     make prefix="$pkgdir/usr" install
@@ -172,7 +171,7 @@ package() {
       dlldir="$pkgdir/usr/lib32/wine" install
 
     msg2 "Packaging Wine-64..."
-    cd "$srcdir/$pkgname-64-build"
+    cd "$srcdir/$_pkgname-64-build"
     make prefix="$pkgdir/usr" \
       libdir="$pkgdir/usr/lib" \
       dlldir="$pkgdir/usr/lib/wine" install
