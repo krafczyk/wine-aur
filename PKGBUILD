@@ -4,12 +4,12 @@
 # Contributor: Eduardo Romero <eduardo@archlinux.org>
 # Contributor: Giovanni Scafora <giovanni@archlinux.org>
 
-pkgname=wine-git
+pkgname=wine-my-git
 _pkgname=wine
-pkgver=1.7.52.185.g58b1db3
+pkgver=1.7.54.1.g45b83dc
 pkgrel=1
 
-source=("git://github.com/krafczyk/wine.git#branch=winepulse-master-current"
+source=("git://github.com/krafczyk/wine.git#branch=wine-staging-1.7.54"
         30-win32-aliases.conf)
 sha1sums=('SKIP'
           '023a5c901c6a091c56e76b6a62d141d87cce9fdb')
